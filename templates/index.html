@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLflow ETK Results Viewer</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🔬 MLflow ETK Results Viewer</h1>
+            <div class="credential-status" id="credential-status">
+                <span class="status-indicator" id="status-indicator">●</span>
+                <span id="status-text">Checking credentials...</span>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Panel: Terminal for SSO Login -->
+            <div class="panel terminal-panel">
+                <div class="panel-header">
+                    <h2>🖥️ AWS Credential Setup</h2>
+                    <button class="btn btn-secondary" onclick="sendCommand('sso-credentials')">
+                        Run sso-credentials
+                    </button>
+                    <button class="btn btn-secondary" onclick="refreshCredentials()">
+                        🔄 Check Credentials
+                    </button>
+                </div>
+                <div class="terminal-info">
+                    <p>Run <code>sso-credentials</code> and select:</p>
+                    <ol>
+                        <li>Organization: <strong>commercial</strong> (1)</li>
+                        <li>Partition: <strong>standard</strong> (1)</li>
+                        <li>Account: <strong>ml-models-dev</strong> (27)</li>
+                        <li>Role: <strong>AdministratorAccess</strong> (1)</li>
+                    </ol>
+                </div>
+                <div id="terminal" class="terminal-container"></div>
+            </div>
+            
+            <!-- Right Panel: Results Viewer -->
+            <div class="panel results-panel">
+                <div class="panel-header">
+                    <h2>📊 Evaluation Results</h2>
+                </div>
+                
+                <!-- Search Box -->
+                <div class="search-box">
+                    <label for="job-id-input">JOB_ID:</label>
+                    <input 
+                        type="text" 
+                        id="job-id-input" 
+                        placeholder="e.g., e9e21aa3-646c-43ae-902a-48aee6540ce9"
+                        class="job-id-input"
+                    >
+                    <button class="btn btn-primary" onclick="fetchResults()" id="fetch-btn">
+                        🔍 Fetch Results
+                    </button>
+                </div>
+                
+                <!-- Status Messages -->
+                <div id="status-message" class="status-message hidden"></div>
+                
+                <!-- Results Container -->
+                <div id="results-container" class="results-container">
+                    <div class="empty-state">
+                        <p>Enter a JOB_ID above to fetch evaluation results</p>
+                        <p class="hint">Results will be fetched from S3 bucket</p>
+                    </div>
+                </div>
+                
+                <!-- Results Summary -->
+                <div id="results-summary" class="results-summary hidden">
+                    <h3>📈 Summary Statistics</h3>
+                    <div id="summary-stats"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Detail Modal -->
+        <div id="detail-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-title">Result Details</h3>
+                    <button class="close-btn" onclick="closeModal()">×</button>
+                </div>
+                <div id="modal-body" class="modal-body"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
